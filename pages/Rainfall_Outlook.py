@@ -9,7 +9,7 @@ import streamlit as st
 from io import BytesIO
 
 # Load shapefile and clip extent
-shp = r'C:\Users\thahumeena.MMS\Desktop\test autheticator\Atoll_boundary2016.shp'
+shp = shp = 'data/Atoll_boundary2016.shp'
 gdf = gpd.read_file(shp).to_crs(epsg=4326)
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
@@ -125,3 +125,4 @@ st.download_button(
     file_name='rainfall_outlook_map.png',
     mime='image/png'
 )
+
