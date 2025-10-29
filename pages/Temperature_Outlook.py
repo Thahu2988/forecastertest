@@ -13,7 +13,7 @@ warnings.filterwarnings("ignore", message="missing ScriptRunContext")
 warnings.filterwarnings("ignore", message="not compatible with tight_layout")
 
 # --- Load shapefile ---
-shp = r"C:\Users\thahumeena.MMS\Desktop\Shape_File\Atoll_boundary2016.shp"
+shp = shp = 'data/Atoll_boundary2016.shp'
 gdf = gpd.read_file(shp).to_crs(epsg=4326)
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
@@ -143,3 +143,4 @@ if generate_map:
     st.success("✅ Map generated successfully!")
 else:
     st.info("👈 Adjust probabilities and categories for each atoll, edit map title, then click 'Generate Map'.")
+
