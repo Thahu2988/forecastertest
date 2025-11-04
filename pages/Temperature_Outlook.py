@@ -8,13 +8,57 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import io
 import warnings
 
+# Set the page configuration for the map tool
+st.set_page_config(
+    page_title="Rainfall Outlook Generator",
+    page_icon="🗺️",
+    layout="wide"
+)
+
+# --- Custom CSS to Hide UI Elements (Top-Right and Bottom-Right) ---
+hide_streamlit_ui = """
+<style>
+/* 1. Hide the top-right Streamlit toolbar (Share, Star, Edit, etc.) */
+#MainMenu {visibility: hidden;} /* Hides the three-dot menu */
+
+[data-testid="stToolbar"] {
+    visibility: hidden !important;
+    height: 0px !important;
+    position: fixed !important;
+}
+
+/* 2. Hide the entire footer area, which contains the bottom-right elements */
+footer {
+    visibility: hidden !important;
+    display: none !important; /* Use display: none for maximum hiding effect */
+    height: 0px !important;
+}
+
+/* 3. Aggressively hide the specific container for 'Manage app' or similar bottom-right features */
+.st-emotion-cache-1j00l9g, .st-emotion-cache-1fv82ss { 
+    visibility: hidden !important; 
+    display: none !important;
+}
+/* NOTE: The top-left sidebar toggle button is NOT explicitly hidden here, */
+/* so it should remain visible by default if the sidebar is populated. */
+
+</style>
+"""
+st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
+
 # --- Ignore harmless warnings ---
 warnings.filterwarnings("ignore", message="missing ScriptRunContext")
 warnings.filterwarnings("ignore", message="not compatible with tight_layout")
 
 # --- Load shapefile ---
-shp = shp = 'data/Atoll_boundary2016.shp'
-gdf = gpd.read_file(shp).to_crs(epsg=4326)
+shp = 'data/Atoll_boundary2016.shp'
+# NOTE: Added error handling in case the shapefile is missing
+try:
+    gdf = gpd.read_file(shp).to_crs(epsg=4326)
+except Exception as e:
+    st.error(f"Error loading shapefile: {e}. Please ensure 'data/Atoll_boundary2016.shp' is accessible.")
+    st.stop()
+    
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
 
@@ -112,8 +156,8 @@ if generate_map:
 
     def make_cb(ax, cmap, title, offset):
         cax = inset_axes(ax, width=width, height=height, loc='lower left',
-                         bbox_to_anchor=(start_x, start_y + offset, 1, 1),
-                         bbox_transform=ax.transAxes, borderpad=0)
+                          bbox_to_anchor=(start_x, start_y + offset, 1, 1),
+                          bbox_transform=ax.transAxes, borderpad=0)
         cb = colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, boundaries=bins,
                                    ticks=tick_positions, spacing='uniform', orientation='horizontal')
         cb.set_ticklabels(tick_labels)
@@ -143,4 +187,3 @@ if generate_map:
     st.success("✅ Map generated successfully!")
 else:
     st.info("👈 Adjust probabilities and categories for each atoll, edit map title, then click 'Generate Map'.")
-
