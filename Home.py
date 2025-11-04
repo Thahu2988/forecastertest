@@ -12,7 +12,7 @@ st.set_page_config(
 # --- Custom CSS ---
 st.markdown("""
 <style>
-/* Hide the "Manage app" black tab (top-right) */
+/* Hide the "Manage app" tab (top-right black tab) */
 div[data-testid="stAppViewerControlPanel"] {
     display: none !important;
     visibility: hidden !important;
@@ -24,7 +24,7 @@ div[data-testid="stAppViewerControlPanel"] {
     visibility: hidden !important;
 }
 
-/* Hide Streamlit footer and main menu */
+/* Hide footer and main menu */
 footer, #MainMenu {display: none !important;}
 
 /* Hide Streamlit toolbar (Share, etc.) */
@@ -41,7 +41,7 @@ button[title="Hide sidebar"] {
     display: none !important;
 }
 
-/* --- Layout Styling --- */
+/* --- Page Styling --- */
 body {
     background-color: #f8f9fa;
 }
@@ -49,19 +49,20 @@ body {
 .header-container {
     text-align: center;
     padding-top: 2.5rem;
-    padding-bottom: 0.5rem;
+    padding-bottom: 1rem;
 }
 
-/* Button container (below title) */
-.button-container {
+/* Button row centered tightly together */
+.button-row {
     display: flex;
     justify-content: center;
-    gap: 1rem;
+    align-items: center;
+    gap: 1rem;  /* Controls the space between buttons */
     margin-top: 1rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
-/* Buttons */
+/* Buttons styling */
 .menu-button {
     background-color: #f0f2f6;
     color: #000;
@@ -91,27 +92,30 @@ body {
 </style>
 """, unsafe_allow_html=True)
 
-# --- Header (Top Section) ---
+# --- Header Section ---
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 st.title("🛠️ Maldives Meteorological Service Tools")
 
-# --- Buttons just below title ---
-st.markdown('<div class="button-container">', unsafe_allow_html=True)
-col1, col2 = st.columns([1, 1])
+# --- Two Buttons Close Together Below Title ---
+st.markdown('<div class="button-row">', unsafe_allow_html=True)
+col1, col2 = st.columns([0.5, 0.5])
 with col1:
-    if st.button("🌧️ Rainfall Outlook", key="rain"):
+    if st.button("🌧️ Rainfall Outlook", key="rain", use_container_width=True):
         st.switch_page("pages/Rainfall_Outlook.py")
 with col2:
-    if st.button("🌡️ Temperature Outlook", key="temp"):
+    if st.button("🌡️ Temperature Outlook", key="temp", use_container_width=True):
         st.switch_page("pages/Temperature_Outlook.py")
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Subtext ---
+# --- Subtext and Timestamp ---
 st.markdown('<p class="subtext">Select a forecast tool to begin</p>', unsafe_allow_html=True)
 
-# --- Initialize and Display App Run Time ---
 if 'start_time' not in st.session_state:
     st.session_state['start_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-st.markdown(f'<p class="caption">App running as of {st.session_state["start_time"]} (Time Zone: Malé, Maldives)</p>', unsafe_allow_html=True)
+
+st.markdown(
+    f'<p class="caption">App running as of {st.session_state["start_time"]} (Time Zone: Malé, Maldives)</p>',
+    unsafe_allow_html=True
+)
 
 st.markdown('</div>', unsafe_allow_html=True)
