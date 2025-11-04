@@ -11,43 +11,52 @@ st.set_page_config(
 # --- Targeted CSS ---
 hide_ui_css = """
 <style>
-/* --- Hide the Streamlit Cloud "Manage app" tab (top-right black tab) --- */
+/* --- Hide the "Manage app" tab (top-right black tab) --- */
 div[data-testid="stAppViewerControlPanel"] {
     display: none !important;
     visibility: hidden !important;
 }
 
-/* --- Hide the bottom-right status widget (optional) --- */
+/* --- Hide the bottom-right Streamlit status box (optional) --- */
 [data-testid="stStatusWidget"] {
-    visibility: hidden !important;
     display: none !important;
+    visibility: hidden !important;
 }
 
-/* --- Hide Streamlit's default footer --- */
+/* --- Hide the Streamlit footer --- */
 footer {
-    visibility: hidden !important;
-    height: 0 !important;
     display: none !important;
 }
 
-/* --- Hide the main menu (top-right three dots) --- */
+/* --- Hide the main menu (three dots) --- */
 #MainMenu {
-    visibility: hidden !important;
-}
-
-/* --- Hide Streamlit toolbar (Share, Edit, etc.) but keep sidebar toggle visible --- */
-[data-testid="stToolbar"] {
-    visibility: hidden !important;
-    height: 0 !important;
     display: none !important;
 }
 
-/* --- Ensure sidebar toggle (arrow / hamburger) remains visible --- */
-button[kind="header"] {
+/* --- Hide the toolbar but DO NOT affect the sidebar toggle --- */
+header [data-testid="stToolbar"] {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+}
+
+/* --- Explicitly restore and pin the sidebar toggle (top-left arrow) --- */
+button[title="Show sidebar"],
+button[title="Hide sidebar"] {
     visibility: visible !important;
-    display: flex !important;
-    position: relative !important;
-    z-index: 999 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    top: 0.6rem !important;
+    left: 0.6rem !important;
+    z-index: 10000 !important;
+    background-color: white !important;
+    border: 1px solid #ddd !important;
+    border-radius: 6px !important;
+    width: 32px !important;
+    height: 32px !important;
 }
 </style>
 """
