@@ -7,42 +7,42 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS to Hide UI Elements (Aggressive Final Fix) ---
-# This CSS hides the top-right menu and the bottom-right "Manage app" link.
+# --- Ultra-Aggressive CSS to Hide All Deployment UI ---
 hide_streamlit_ui = """
 <style>
-/* 1. Hide the top-right three-dot menu (#MainMenu) and the Share/Star toolbar */
-#MainMenu {visibility: hidden;}
-
-/* Hides the Share, Star, Edit, and GitHub icons */
-[data-testid="stToolbar"] {
+/* Hides the top-right menu and toolbar (Share, Star, Edit, GitHub, three dots) */
+#MainMenu, [data-testid="stToolbar"] {
     visibility: hidden !important;
     height: 0px !important;
     position: fixed !important;
+    display: none !important; 
 }
 
-/* 2. Hide the main footer text */
+/* Hides the standard footer text/logo */
 footer {
-    visibility: hidden;
-    height: 0;
+    visibility: hidden !important;
+    height: 0 !important;
+    display: none !important;
 }
 
-/* 3. Hide the status widget (often the "Manage app" container) by data-testid */
+/* Hides the stStatusWidget (often the "Manage app" container) by data-testid */
 [data-testid="stStatusWidget"] {
     visibility: hidden !important; 
     display: none !important;
 }
 
-/* Aggressive selectors to catch the floating footer/deployment widget */
-.st-emotion-cache-nahz7x, .st-emotion-cache-1g8i5q1 {
+/* Targets the primary container for floating status/deployment UI */
+div[data-testid="stDecoration"] {
     visibility: hidden !important;
     display: none !important;
 }
 
-div[data-testid="stDecoration"] {
-    visibility: hidden !important; 
+/* Targets common classes for the floating bottom-right container */
+.st-emotion-cache-1g8i5q1.e1nx5aiz1, .css-1g8i5q1, .st-emotion-cache-nahz7x {
+    visibility: hidden !important;
     display: none !important;
 }
+
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
@@ -58,9 +58,6 @@ st.markdown(
     Use the navigation menu on the left to access the available tools.
     """
 )
-
-# --- Tool Description Removed --- 
-# The "Viber Forecast Generator" section was here and has been removed.
 
 st.markdown("---")
 
