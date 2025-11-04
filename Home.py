@@ -7,7 +7,8 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS to Hide UI Elements (More Robust) ---
+# --- Custom CSS to Hide UI Elements (Aggressive Final Fix) ---
+# This CSS hides the top-right menu and the bottom-right "Manage app" link.
 hide_streamlit_ui = """
 <style>
 /* 1. Hide the top-right three-dot menu (#MainMenu) and the Share/Star toolbar */
@@ -20,24 +21,28 @@ hide_streamlit_ui = """
     position: fixed !important;
 }
 
-/* 2. Hide the "Manage app" and Streamlit branding in the footer */
+/* 2. Hide the main footer text */
 footer {
     visibility: hidden;
+    height: 0;
 }
 
-/* New: Targets the main status widget which often contains the "Manage app" button */
-/* This is a common selector for the deployment-related controls */
+/* 3. Hide the status widget (often the "Manage app" container) by data-testid */
 [data-testid="stStatusWidget"] {
     visibility: hidden !important; 
     display: none !important;
 }
 
-/* Fallback for the dynamically generated class, which may have changed */
-/* .st-emotion-cache-1j00l9g { 
+/* Aggressive selectors to catch the floating footer/deployment widget */
+.st-emotion-cache-nahz7x, .st-emotion-cache-1g8i5q1 {
+    visibility: hidden !important;
+    display: none !important;
+}
+
+div[data-testid="stDecoration"] {
     visibility: hidden !important; 
     display: none !important;
-} */
-
+}
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
@@ -48,33 +53,14 @@ st.markdown("---")
 
 st.markdown(
     """
-    Welcome to the Maldives Meteorological Service internal application suite.
+    Welcome to the **Maldives Meteorological Service internal application suite**.
     
     Use the navigation menu on the left to access the available tools.
     """
 )
 
-# --- Tool Description ---
-st.header("📲 Viber Forecast Generator")
-st.info(
-    """
-    Navigate to the **Viber Forecast Tool** page (in the sidebar on the left) 
-    to generate the daily weather post for social media and Viber channels.
-    
-    The tool allows you to input forecast text in both English and Dhivehi, 
-    preview the graphic with correct fonts and images, and download the final image.
-    
-    ***
-    
-    ### 🛑 Important: Setup Check
-    
-    For the fonts and images to display and for the download function to work, 
-    please ensure you have the following folder structure and config file at your project's root:
-    
-    1.  **`.streamlit/config.toml`** file exists with `[server] enableStaticServing = true`.
-    2.  **`static/`** folder exists and contains all required assets (`.png` and `.ttf` files).
-    """
-)
+# --- Tool Description Removed --- 
+# The "Viber Forecast Generator" section was here and has been removed.
 
 st.markdown("---")
 
