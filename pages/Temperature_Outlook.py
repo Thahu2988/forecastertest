@@ -8,75 +8,13 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import io
 import warnings
 
-# Set the page configuration for the map tool
-st.set_page_config(
-    page_title="Rainfall Outlook Generator",
-    page_icon="🗺️",
-    layout="wide"
-)
-
-# --- Custom CSS to Control UI Elements ---
-hide_streamlit_ui = """
-<style>
-/* 1. Hide the top-right Streamlit toolbar (Share, Star, Edit, etc.) */
-#MainMenu {visibility: hidden;} /* Hides the three-dot menu */
-
-[data-testid="stToolbar"] {
-    visibility: hidden !important;
-    height: 0px !important;
-    position: fixed !important;
-}
-
-/* 2. Hide the entire footer area, which contains the bottom-right elements */
-footer {
-    visibility: hidden !important;
-    display: none !important; 
-    height: 0px !important;
-}
-
-/* 3. Aggressively hide the specific container for 'Manage app' or similar bottom-right features */
-.st-emotion-cache-1j00l9g, .st-emotion-cache-1fv82ss { 
-    visibility: hidden !important; 
-    display: none !important;
-}
-
-/* *** 4. FINAL, AGGRESSIVE ATTEMPT TO FORCE THE SIDEBAR TOGGLE ARROW VISIBILITY *** */
-
-/* Targets the main button element and forces visibility and opacity */
-[data-testid="stSidebarToggleButton"] {
-    opacity: 1 !important; 
-    visibility: visible !important; 
-    pointer-events: auto !important; 
-    z-index: 10000 !important; /* Extremely high z-index */
-    color: white !important; /* Ensure the arrow icon itself is visible against a dark background */
-}
-
-/* Targets a common container that might be clipping the arrow */
-.css-1n76gbl { /* A container class often near the toggle button */
-    overflow: visible !important; 
-}
-
-/* Ensure the main content area has the space it needs */
-section.main {
-    padding-top: 5rem; 
-}
-</style>
-"""
-st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
-
 # --- Ignore harmless warnings ---
 warnings.filterwarnings("ignore", message="missing ScriptRunContext")
 warnings.filterwarnings("ignore", message="not compatible with tight_layout")
 
 # --- Load shapefile ---
-shp = 'data/Atoll_boundary2016.shp'
-# NOTE: Added error handling in case the shapefile is missing
-try:
-    gdf = gpd.read_file(shp).to_crs(epsg=4326)
-except Exception as e:
-    st.error(f"Error loading shapefile: {e}. Please ensure 'data/Atoll_boundary2016.shp' is accessible.")
-    st.stop()
-    
+shp = shp = 'data/Atoll_boundary2016.shp'
+gdf = gpd.read_file(shp).to_crs(epsg=4326)
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
 
@@ -133,9 +71,7 @@ for atoll, default in default_probs.items():
 
 generate_map = st.sidebar.button("🗺️ Generate Map")
 
-# --- Main Content Display Logic ---
 if generate_map:
-    # Logic runs only when the button is clicked
     gdf['prob'] = gdf['Name'].map(user_probs)
     gdf['category'] = gdf['Name'].map(user_categories)
 
@@ -163,7 +99,6 @@ if generate_map:
     ax.set_ylim(-1, 7.5)
     ax.set_xlabel("Longitude (°E)")
     ax.set_ylabel("Latitude (°N)")
-    st.title(custom_title) # Display title in the main area
     ax.set_title(custom_title, fontsize=16)
     ax.set_xticks([71, 72, 73, 74, 75])
     ax.set_xticklabels(["71°E", "72°E", "73°E", "74°E", "75°E"])
@@ -177,8 +112,8 @@ if generate_map:
 
     def make_cb(ax, cmap, title, offset):
         cax = inset_axes(ax, width=width, height=height, loc='lower left',
-                          bbox_to_anchor=(start_x, start_y + offset, 1, 1),
-                          bbox_transform=ax.transAxes, borderpad=0)
+                         bbox_to_anchor=(start_x, start_y + offset, 1, 1),
+                         bbox_transform=ax.transAxes, borderpad=0)
         cb = colorbar.ColorbarBase(cax, cmap=cmap, norm=norm, boundaries=bins,
                                    ticks=tick_positions, spacing='uniform', orientation='horizontal')
         cb.set_ticklabels(tick_labels)
@@ -207,6 +142,6 @@ if generate_map:
 
     st.success("✅ Map generated successfully!")
 else:
-    # Default message when button hasn't been clicked
-    st.title(custom_title)
     st.info("👈 Adjust probabilities and categories for each atoll, edit map title, then click 'Generate Map'.")
+
+
