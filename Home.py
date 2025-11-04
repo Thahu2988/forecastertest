@@ -7,10 +7,24 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Ultra-Aggressive CSS to Hide All Deployment UI ---
+# --- CSS to Hide Streamlit UI Components ---
+# The target for the "Manage app" box is usually 'stStatusWidget' or the footer.
 hide_streamlit_ui = """
 <style>
-/* Hides the top-right menu and toolbar (Share, Star, Edit, GitHub, three dots) */
+/* 1. Hides the standard footer (which sometimes hosts similar info) */
+footer {
+    visibility: hidden !important;
+    height: 0 !important;
+    display: none !important;
+}
+
+/* 2. Hides the stStatusWidget (This is the primary target for the "Manage app" floating box) */
+[data-testid="stStatusWidget"] {
+    visibility: hidden !important;
+    display: none !important;
+}
+
+/* 3. Hides the top-right menu and toolbar (Share, Star, Edit, three dots, etc.) for completeness */
 #MainMenu, [data-testid="stToolbar"] {
     visibility: hidden !important;
     height: 0px !important;
@@ -18,33 +32,9 @@ hide_streamlit_ui = """
     display: none !important; 
 }
 
-/* Hides the standard footer text/logo */
-footer {
-    visibility: hidden !important;
-    height: 0 !important;
-    display: none !important;
-}
-
-/* Hides the stStatusWidget (often the "Manage app" container) by data-testid */
-[data-testid="stStatusWidget"] {
-    visibility: hidden !important; 
-    display: none !important;
-}
-
-/* Targets the primary container for floating status/deployment UI */
-div[data-testid="stDecoration"] {
-    visibility: hidden !important;
-    display: none !important;
-}
-
-/* Targets common classes for the floating bottom-right container */
-.st-emotion-cache-1g8i5q1.e1nx5aiz1, .css-1g8i5q1, .st-emotion-cache-nahz7x {
-    visibility: hidden !important;
-    display: none !important;
-}
-
 </style>
 """
+# Apply the CSS using st.markdown with unsafe_allow_html=True
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
 
 # --- Title and Introduction ---
@@ -61,5 +51,9 @@ st.markdown(
 
 st.markdown("---")
 
-start_time = st.session_state.get('start_time', 'N/A')
+# Note: st.session_state must be initialized before accessing keys
+if 'start_time' not in st.session_state:
+    st.session_state['start_time'] = 'N/A'
+
+start_time = st.session_state.get('start_time')
 st.caption(f"App running as of {start_time}")
