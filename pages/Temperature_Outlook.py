@@ -15,7 +15,9 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS to Hide UI Elements (Top-Right and Bottom-Right) ---
+# --- Custom CSS to Hide UI Elements (Top-Right and Bottom-Right ONLY) ---
+# NOTE: All previous, custom CSS targeting the top-left sidebar toggle arrow
+# has been REMOVED to restore default Streamlit behavior.
 hide_streamlit_ui = """
 <style>
 /* 1. Hide the top-right Streamlit toolbar (Share, Star, Edit, etc.) */
@@ -39,9 +41,12 @@ footer {
     visibility: hidden !important; 
     display: none !important;
 }
-/* NOTE: The top-left sidebar toggle button is NOT explicitly hidden here, */
-/* so it should remain visible by default if the sidebar is populated. */
 
+/* 4. Ensure the main content area has the space it needs */
+/* This is a common fix if the main content collapses */
+section.main {
+    padding-top: 5rem; 
+}
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
@@ -115,7 +120,9 @@ for atoll, default in default_probs.items():
 
 generate_map = st.sidebar.button("🗺️ Generate Map")
 
+# --- Main Content Display Logic ---
 if generate_map:
+    # Logic runs only when the button is clicked
     gdf['prob'] = gdf['Name'].map(user_probs)
     gdf['category'] = gdf['Name'].map(user_categories)
 
@@ -143,6 +150,7 @@ if generate_map:
     ax.set_ylim(-1, 7.5)
     ax.set_xlabel("Longitude (°E)")
     ax.set_ylabel("Latitude (°N)")
+    st.title(custom_title) # Display title in the main area
     ax.set_title(custom_title, fontsize=16)
     ax.set_xticks([71, 72, 73, 74, 75])
     ax.set_xticklabels(["71°E", "72°E", "73°E", "74°E", "75°E"])
@@ -186,4 +194,6 @@ if generate_map:
 
     st.success("✅ Map generated successfully!")
 else:
+    # Default message when button hasn't been clicked
+    st.title(custom_title)
     st.info("👈 Adjust probabilities and categories for each atoll, edit map title, then click 'Generate Map'.")
