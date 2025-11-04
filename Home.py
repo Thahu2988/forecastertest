@@ -1,4 +1,5 @@
 import streamlit as st
+import datetime
 
 # Set the page configuration for the Home page
 st.set_page_config(
@@ -7,35 +8,44 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- CSS to Hide Streamlit UI Components ---
-# The target for the "Manage app" box is usually 'stStatusWidget' or the footer.
-hide_streamlit_ui = """
+# --- Targeted CSS to Hide ONLY the Deployment UI ---
+hide_deployment_ui = """
 <style>
-/* 1. Hides the standard footer (which sometimes hosts similar info) */
+/* 1. Primary target: Hides the "Manage app" floating box by its data-testid */
+[data-testid="stStatusWidget"] {
+    visibility: hidden !important;
+    display: none !important;
+}
+
+/* 2. Secondary target: Hides the standard footer text/logo (often 'Made with Streamlit') */
 footer {
     visibility: hidden !important;
     height: 0 !important;
     display: none !important;
 }
 
-/* 2. Hides the stStatusWidget (This is the primary target for the "Manage app" floating box) */
-[data-testid="stStatusWidget"] {
+/* 3. Optional: Hides the top-right menu (three dots, Share, etc.) */
+#MainMenu {
     visibility: hidden !important;
-    display: none !important;
 }
 
-/* 3. Hides the top-right menu and toolbar (Share, Star, Edit, three dots, etc.) for completeness */
-#MainMenu, [data-testid="stToolbar"] {
+/* 4. Optional: Hides the top toolbar (Edit, GitHub, etc.). 
+   This selector is safe and does not affect the sidebar toggle. */
+[data-testid="stToolbar"] {
     visibility: hidden !important;
     height: 0px !important;
     position: fixed !important;
     display: none !important; 
 }
 
+/* IMPORTANT FIX: We REMOVED the overly aggressive selectors like:
+   .st-emotion-cache-1g8i5q1.e1nx5aiz1, .css-1g8i5q1, .st-emotion-cache-nahz7x 
+   These were likely hiding the sidebar toggle or other essential components. */
+
 </style>
 """
-# Apply the CSS using st.markdown with unsafe_allow_html=True
-st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
+# Apply the CSS
+st.markdown(hide_deployment_ui, unsafe_allow_html=True)
 
 # --- Title and Introduction ---
 st.title("🛠️ Maldives Meteorological Service Tools")
@@ -51,9 +61,10 @@ st.markdown(
 
 st.markdown("---")
 
-# Note: st.session_state must be initialized before accessing keys
+# --- Initialize and Display App Run Time ---
+# Initialize start_time if it doesn't exist, using the current time
 if 'start_time' not in st.session_state:
-    st.session_state['start_time'] = 'N/A'
+    st.session_state['start_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-start_time = st.session_state.get('start_time')
-st.caption(f"App running as of {start_time}")
+start_time = st.session_state.get('start_time', 'N/A')
+st.caption(f"App running as of {start_time} (Time Zone: Malé, Maldives)")
