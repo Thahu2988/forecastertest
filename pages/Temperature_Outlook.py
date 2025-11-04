@@ -40,19 +40,20 @@ footer {
     display: none !important;
 }
 
-/* *** 4. FORCE THE TOP-LEFT SIDEBAR TOGGLE ARROW TO BE ALWAYS VISIBLE *** */
+/* *** 4. FINAL, AGGRESSIVE ATTEMPT TO FORCE THE SIDEBAR TOGGLE ARROW VISIBILITY *** */
 
 /* Targets the main button element and forces visibility and opacity */
 [data-testid="stSidebarToggleButton"] {
     opacity: 1 !important; 
     visibility: visible !important; 
     pointer-events: auto !important; 
-    z-index: 1000; /* Ensure it layers above everything else */
+    z-index: 10000 !important; /* Extremely high z-index */
+    color: white !important; /* Ensure the arrow icon itself is visible against a dark background */
 }
 
-/* Targets the sidebar wrapper to ensure nothing is clipping the arrow */
-.css-1lcbmhc { /* Common class for the sidebar wrapper */
-    overflow: visible !important;
+/* Targets a common container that might be clipping the arrow */
+.css-1n76gbl { /* A container class often near the toggle button */
+    overflow: visible !important; 
 }
 
 /* Ensure the main content area has the space it needs */
