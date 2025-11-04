@@ -1,53 +1,56 @@
 import streamlit as st
 import datetime
 
-# Set the page configuration for the Home page
+# --- Page Configuration ---
 st.set_page_config(
     page_title="Forecasters Tools",
     page_icon="🛠️",
     layout="wide"
 )
 
-# --- Targeted CSS to Hide ONLY the Deployment UI ---
-hide_deployment_ui = """
+# --- Targeted CSS ---
+hide_ui_css = """
 <style>
-/* 1. Primary target: Hides the "Manage app" floating box by its data-testid */
+/* Hide the "Manage app" floating box in bottom-right corner */
 [data-testid="stStatusWidget"] {
     visibility: hidden !important;
     display: none !important;
 }
 
-/* 2. Secondary target: Hides the standard footer text/logo (often 'Made with Streamlit') */
+/* Hide Streamlit's default footer */
 footer {
     visibility: hidden !important;
     height: 0 !important;
     display: none !important;
 }
 
-/* 3. Optional: Hides the top-right menu (three dots, Share, etc.) */
+/* Hide the main menu (three dots in top-right) */
 #MainMenu {
     visibility: hidden !important;
 }
 
-/* 4. Optional: Hides the top toolbar (Edit, GitHub, etc.). 
-   This selector is safe and does not affect the sidebar toggle. */
+/* Hide Streamlit toolbar (Share, Edit, etc.), 
+   but DO NOT hide sidebar toggle (top-left arrow) */
 [data-testid="stToolbar"] {
     visibility: hidden !important;
-    height: 0px !important;
-    position: fixed !important;
-    display: none !important; 
+    height: 0 !important;
+    display: none !important;
 }
 
-/* IMPORTANT FIX: We REMOVED the overly aggressive selectors like:
-   .st-emotion-cache-1g8i5q1.e1nx5aiz1, .css-1g8i5q1, .st-emotion-cache-nahz7x 
-   These were likely hiding the sidebar toggle or other essential components. */
-
+/* Ensure sidebar toggle button (top-left arrow) stays visible */
+button[kind="header"] {
+    visibility: visible !important;
+    display: flex !important;
+    position: relative !important;
+    z-index: 999 !important;
+}
 </style>
 """
-# Apply the CSS
-st.markdown(hide_deployment_ui, unsafe_allow_html=True)
 
-# --- Title and Introduction ---
+# Apply CSS
+st.markdown(hide_ui_css, unsafe_allow_html=True)
+
+# --- Main Page Content ---
 st.title("🛠️ Maldives Meteorological Service Tools")
 st.markdown("---")
 
@@ -62,7 +65,6 @@ st.markdown(
 st.markdown("---")
 
 # --- Initialize and Display App Run Time ---
-# Initialize start_time if it doesn't exist, using the current time
 if 'start_time' not in st.session_state:
     st.session_state['start_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
