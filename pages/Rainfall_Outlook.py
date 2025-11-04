@@ -8,17 +8,58 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import streamlit as st
 from io import BytesIO
 
+# Set the page configuration for the map tool
+st.set_page_config(
+    page_title="Rainfall Outlook Generator",
+    page_icon="🗺️",
+    layout="wide"
+)
+
+# --- Custom CSS to Hide UI Elements (Top-Right and Bottom-Right) ---
+hide_streamlit_ui = """
+<style>
+/* 1. Hide the top-right Streamlit toolbar (Share, Star, Edit, etc.) */
+#MainMenu {visibility: hidden;} /* Hides the three-dot menu */
+
+[data-testid="stToolbar"] {
+    visibility: hidden !important;
+    height: 0px !important;
+    position: fixed !important;
+}
+
+/* 2. Hide the entire footer area, which contains the bottom-right elements */
+footer {
+    visibility: hidden !important;
+    display: none !important; /* Use display: none for maximum hiding effect */
+    height: 0px !important;
+}
+
+/* 3. Aggressively hide the specific container for 'Manage app' or similar bottom-right features */
+.st-emotion-cache-1j00l9g, .st-emotion-cache-1fv82ss { 
+    visibility: hidden !important; 
+    display: none !important;
+}
+
+</style>
+"""
+st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
+
+
 # Load shapefile and clip extent
-shp = shp = 'data/Atoll_boundary2016.shp'
-gdf = gpd.read_file(shp).to_crs(epsg=4326)
+shp = 'data/Atoll_boundary2016.shp'
+# NOTE: Ensure 'data/Atoll_boundary2016.shp' exists in your directory structure
+try:
+    gdf = gpd.read_file(shp).to_crs(epsg=4326)
+except Exception as e:
+    st.error(f"Error loading shapefile: {e}. Please ensure 'data/Atoll_boundary2016.shp' is accessible.")
+    st.stop()
+    
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
 
-# ✅ Clean missing or invalid atoll names
+# Clean missing or invalid atoll names
 gdf['Name'] = gdf['Name'].fillna("Unknown")
-# or to skip missing ones: gdf = gdf.dropna(subset=['Name'])
-
-# ✅ Ensure unique atoll names
+# Ensure unique atoll names
 unique_atolls = sorted(gdf['Name'].unique().tolist())
 
 # Editable map title (sidebar)
@@ -60,7 +101,7 @@ norm = BoundaryNorm(bins, ncolors=len(bins)-1, clip=True)
 tick_positions = [35, 45, 55, 65, 75]
 tick_labels = ['35', '45', '55', '65', '75']
 
-# ✅ Map selections back to gdf (so all parts of same atoll share same values)
+# Map selections back to gdf (so all parts of same atoll share same values)
 gdf['category'] = gdf['Name'].map(selected_categories)
 gdf['prob'] = gdf['Name'].map(selected_percentages)
 
@@ -104,7 +145,7 @@ def make_cb(ax, cmap, title, offset):
     cax.set_title(title, fontsize=10, pad=6)
     cb.ax.tick_params(labelsize=9, pad=2)
 
-# ✅ Rearranged order — Above on top, Normal middle, Below bottom
+# Rearranged order — Above on top, Normal middle, Below bottom
 make_cb(ax, cmap_above, "Above Normal", 2 * spacing)
 make_cb(ax, cmap_normal, "Normal", spacing)
 make_cb(ax, cmap_below, "Below Normal", 0)
@@ -125,4 +166,3 @@ st.download_button(
     file_name='rainfall_outlook_map.png',
     mime='image/png'
 )
-
