@@ -42,19 +42,17 @@ footer {
 
 /* *** 4. FORCE THE TOP-LEFT SIDEBAR TOGGLE ARROW TO BE ALWAYS VISIBLE *** */
 
-/* Targets the main button element by test ID */
+/* Targets the main button element and forces visibility and opacity */
 [data-testid="stSidebarToggleButton"] {
-    /* Critical: Override Streamlit's opacity and visibility rules */
     opacity: 1 !important; 
     visibility: visible !important; 
-    display: flex !important; /* Use flex to ensure proper rendering */
-    pointer-events: auto !important; /* Ensure it remains clickable */
+    pointer-events: auto !important; 
+    z-index: 1000; /* Ensure it layers above everything else */
 }
 
-/* Targets the internal icon element (the actual arrow image) for maximum aggression */
-[data-testid="stSidebarToggleButton"] svg {
-    visibility: visible !important;
-    opacity: 1 !important;
+/* Targets the sidebar wrapper to ensure nothing is clipping the arrow */
+.css-1lcbmhc { /* Common class for the sidebar wrapper */
+    overflow: visible !important;
 }
 
 /* Ensure the main content area has the space it needs */
