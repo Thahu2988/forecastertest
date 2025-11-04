@@ -5,33 +5,58 @@ import datetime
 st.set_page_config(
     page_title="Forecasters Tools",
     page_icon="🛠️",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 # --- Custom CSS ---
 st.markdown("""
 <style>
-/* Hide Streamlit Cloud "Manage app" tab */
-div[data-testid="stAppViewerControlPanel"] {display: none !important;}
-[data-testid="stStatusWidget"] {display: none !important;}
-footer, #MainMenu {display: none !important;}
-[data-testid="stToolbar"] {display: none !important;}
+/* Hide Streamlit Cloud "Manage app" tab (top-right black tab) */
+div[data-testid="stAppViewerControlPanel"] {
+    display: none !important;
+    visibility: hidden !important;
+}
 
-/* Center container */
-.center-container {
+/* Hide bottom-right status widget */
+[data-testid="stStatusWidget"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide footer and top-right menu */
+footer, #MainMenu {display: none !important;}
+
+/* Hide Streamlit toolbar (Share, etc.) */
+[data-testid="stToolbar"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide the sidebar toggle (top-left arrow) completely */
+button[title="Toggle sidebar"],
+button[title="Open sidebar"],
+button[title="Hide sidebar"],
+section[data-testid="stSidebar"] {
+    display: none !important;
+}
+
+/* --- Centered main layout --- */
+.main-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 80vh;
+    height: 90vh;
     text-align: center;
+    margin-top: -5vh;
 }
 
-/* Menu buttons */
+/* --- Button styling for navigation --- */
 .menu-button {
     background-color: #f0f2f6;
     color: #000;
-    padding: 0.8em 2em;
+    padding: 0.8em 2.2em;
     margin: 0.5em;
     border-radius: 8px;
     border: none;
@@ -43,31 +68,37 @@ footer, #MainMenu {display: none !important;}
     background-color: #004080;
     color: white;
 }
+
+/* --- Title and subtitle styling --- */
+h1 {
+    margin-bottom: 0.2em;
+}
+.subtext {
+    font-size: 1.1em;
+    color: #444;
+    margin-bottom: 1.5em;
+}
 </style>
 """, unsafe_allow_html=True)
 
-# --- Main Page ---
-st.markdown('<div class="center-container">', unsafe_allow_html=True)
-st.title("🛠️ Maldives Meteorological Service Tools")
-st.markdown("### Select a tool below")
+# --- Page Content ---
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# --- Central navigation menu ---
+st.title("🛠️ Maldives Meteorological Service Tools")
+st.markdown('<p class="subtext">Select a forecast tool to begin</p>', unsafe_allow_html=True)
+
+# Centered navigation buttons
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     if st.button("🌧️ Rainfall Outlook", key="rain"):
         st.switch_page("pages/Rainfall_Outlook.py")
-
     if st.button("🌡️ Temperature Outlook", key="temp"):
         st.switch_page("pages/Temperature_Outlook.py")
 
-    if st.button("🏠 Home", key="home"):
-        st.switch_page("Home.py")
-
 st.markdown('</div>', unsafe_allow_html=True)
 
-# --- Initialize and Display App Run Time ---
+# --- App runtime caption ---
 if 'start_time' not in st.session_state:
     st.session_state['start_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-start_time = st.session_state.get('start_time', 'N/A')
-st.caption(f"App running as of {start_time} (Time Zone: Malé, Maldives)")
+st.caption(f"App running as of {st.session_state['start_time']} (Time Zone: Malé, Maldives)")
