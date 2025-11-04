@@ -67,4 +67,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Initialize and Display App Run Time ---
 if 'start_time' not in st.session_state:
-    st.session_state['start_time'] = datetime.da_]()_
+    st.session_state['start_time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+start_time = st.session_state.get('start_time', 'N/A')
+st.caption(f"App running as of {start_time} (Time Zone: Malé, Maldives)")
