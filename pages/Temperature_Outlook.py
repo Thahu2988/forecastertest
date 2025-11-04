@@ -15,9 +15,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS to Hide UI Elements (Top-Right and Bottom-Right ONLY) ---
-# NOTE: All previous, custom CSS targeting the top-left sidebar toggle arrow
-# has been REMOVED to restore default Streamlit behavior.
+# --- Custom CSS to Control UI Elements ---
 hide_streamlit_ui = """
 <style>
 /* 1. Hide the top-right Streamlit toolbar (Share, Star, Edit, etc.) */
@@ -32,7 +30,7 @@ hide_streamlit_ui = """
 /* 2. Hide the entire footer area, which contains the bottom-right elements */
 footer {
     visibility: hidden !important;
-    display: none !important; /* Use display: none for maximum hiding effect */
+    display: none !important; 
     height: 0px !important;
 }
 
@@ -42,8 +40,15 @@ footer {
     display: none !important;
 }
 
-/* 4. Ensure the main content area has the space it needs */
-/* This is a common fix if the main content collapses */
+/* *** 4. FORCE THE TOP-LEFT SIDEBAR TOGGLE ARROW TO BE ALWAYS VISIBLE *** */
+/* This overrides Streamlit's default behavior of hiding the arrow when the sidebar is open. */
+[data-testid="stSidebarToggleButton"] {
+    visibility: visible !important; 
+    display: block !important; 
+    /* Ensures the icon itself is not hidden by other rules */
+}
+
+/* Ensure the main content area has the space it needs */
 section.main {
     padding-top: 5rem; 
 }
