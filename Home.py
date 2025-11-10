@@ -9,19 +9,26 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- Custom CSS (FIXED for hiding top-right controls) ---
+# --- Custom CSS (HIGHLY AGGRESSIVE FIX for hiding top-right controls) ---
 st.markdown("""
 <style>
-/* Hide the top Streamlit header (contains the three-dot menu, "Manage app", and "Share") */
-/* We target multiple elements to ensure thorough hiding across different Streamlit versions */
+/* 1. HIDE ALL TOP-RIGHT STREAMLIT CONTROLS (Share, Settings, 3-dots/Manage App) 
+The use of multiple selectors ensures coverage across different Streamlit versions.
+*/
 header, 
 div[data-testid="stDecoration"],
-div[data-testid="stAppViewerControlPanel"],
-div[data-testid="stToolbar"] {
+div[data-testid="stAppViewContainer"] > header, /* Targets the specific header container */
+div[data-testid="stToolbar"], 
+div[data-testid="stAppViewerControlPanel"], 
+button[data-testid="stActionButton"] { /* Targets the 3-dot button directly */
     display: none !important;
     visibility: hidden !important;
-    height: 0 !important; /* Ensures no empty space is left behind */
+    height: 0 !important; 
+    min-height: 0 !important;
     padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important; /* Prevents interaction */
 }
 
 /* Hide bottom-right status widget */
@@ -33,7 +40,10 @@ div[data-testid="stToolbar"] {
 /* Hide footer and main menu */
 footer, #MainMenu {display: none !important;}
 
-/* Hide sidebar and its toggle (This is what hides the default "Home" navigation) */
+/* 2. HIDE SIDEBAR AND ITS TOGGLE 
+This hides the default Streamlit "Home" navigation link and toggle button. 
+If you want the default navigation back, remove this section.
+*/
 section[data-testid="stSidebar"],
 button[title="Toggle sidebar"],
 button[title="Open sidebar"],
@@ -100,8 +110,6 @@ st.title("🛠️ Maldives Meteorological Service Tools")
 st.markdown('<div class="button-row">', unsafe_allow_html=True)
 
 # Using columns for the buttons
-# Note: st.columns(2) is simpler than st.columns([0.5, 0.5])
-# The inner use_container_width=True ensures the buttons fill the space of their respective columns.
 col1, col2 = st.columns(2) 
 with col1:
     # This button switches to the Rainfall Outlook page
