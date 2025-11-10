@@ -41,7 +41,7 @@ div[data-testid="stAppViewContainer"] > header {
 div[data-testid="stBottomBlock"],
 [data-testid="stStatusWidgetContainer"],
 div[data-testid="stBottom"],
-/* This targets the actual floating black bar containing "Manage app" */
+/* Most persistent selectors for the floating black bar containing "Manage app" */
 .st-emotion-cache-n9h0v5,
 .st-emotion-cache-1j00l9g, 
 .st-emotion-cache-1fv82ss,
@@ -65,13 +65,15 @@ div[data-testid="stSidebarFooter"] {
 /* Hide old/other Streamlit default elements */
 #MainMenu {display: none !important;}
 
-/* 4. WIDEN MAIN CONTENT (To address the empty right column) */
+/* 4. **WIDEN MAIN CONTENT AND REMOVE RIGHT SPACE** */
+/* Target the main content block and force it to use all available width */
 .main .block-container {
-    padding-left: 0rem !important;
-    padding-right: 0rem !important;
-    margin-left: 0rem !important;
-    margin-right: 0rem !important;
-    max-width: 100% !important; /* Ensure it uses max width */
+    padding-left: 1rem !important; /* Keep a minimal padding on the left */
+    padding-right: 1rem !important; /* Keep a minimal padding on the right for content margin */
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+    max-width: 100% !important; 
+    width: 100% !important; /* Force width */
 }
 </style>
 """
