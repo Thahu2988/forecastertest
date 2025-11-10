@@ -15,17 +15,17 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS (DEFINITIVE FIX for hiding all Streamlit chrome) ---
+# --- Custom CSS (FINAL AGGRESSIVE FIX) ---
 hide_streamlit_ui = """
 <style>
 /* 1. HIDE ALL TOP STREAMLIT CONTROLS (Header, Share, Settings, 3-dots/Manage App) */
 header, 
-div[data-testid="stDecoration"], /* Main decoration bar */
-div[data-testid="stToolbar"], /* Toolbar container */
-div[data-testid="stAppViewerControlPanel"], /* Top-right control panel */
-button[data-testid="stActionButton"], /* Targets the 3-dot button directly */
-.st-emotion-cache-12fmufv, /* Highly specific class for the floating menu container */
-div[data-testid="stAppViewContainer"] > header { /* Targets the app header wrapper */
+div[data-testid="stDecoration"],
+div[data-testid="stToolbar"], 
+div[data-testid="stAppViewerControlPanel"], 
+button[data-testid="stActionButton"],
+.st-emotion-cache-12fmufv,
+div[data-testid="stAppViewContainer"] > header {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important; 
@@ -33,17 +33,17 @@ div[data-testid="stAppViewContainer"] > header { /* Targets the app header wrapp
     padding: 0 !important;
     margin: 0 !important;
     opacity: 0 !important;
-    pointer-events: none !important; /* Prevents interaction */
+    pointer-events: none !important;
 }
 
 /* 2. HIDE BOTTOM "MANAGE APP" BAR AND FOOTER */
-/* Targets the specific container for the black bar */
-[data-testid="stStatusWidget"], /* Bottom-right status widget */
-div[data-testid="stBottomBlock"], /* Targets the persistent footer bar container */
-[data-testid="stStatusWidgetContainer"], /* New selector for the bar itself */
-/* MOST AGGRESSIVE SELECTOR FOR THE BLACK FOOTER BAR: */
+[data-testid="stStatusWidget"],
+div[data-testid="stBottomBlock"],
+[data-testid="stStatusWidgetContainer"],
+/* FINAL SELECTOR FOR THE BLACK FOOTER BAR */
 div[data-testid="stBottom"],
-footer {
+/* MOST AGGRESSIVE SELECTOR FOR THE APP FOOTER: */
+.st-emotion-cache-n9h0v5 {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important; 
@@ -55,9 +55,17 @@ footer {
 }
 
 /* Hide old/other Streamlit default elements */
-#MainMenu {display: none !important;}
+#MainMenu, footer {display: none !important;}
 
-/* 3. SIDEBAR CONTROLS: Sidebar is intentionally visible for user input. */
+/* 3. WIDEN MAIN CONTENT (ADDRESSES THE 5-INCH RIGHT SPACE) */
+/* This targets the main content div and removes side padding/margins */
+.main .block-container {
+    padding-left: 0rem !important;
+    padding-right: 0rem !important;
+    margin-left: 0rem !important;
+    margin-right: 0rem !important;
+    max-width: 100% !important; /* Ensure it uses max width */
+}
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
@@ -77,7 +85,7 @@ gdf = gdf[gdf.intersects(bbox)]
 
 # Clean missing or invalid atoll names
 gdf['Name'] = gdf['Name'].fillna("Unknown")
-# Ensure unique atoll names
+# Ensure unique atolls
 unique_atolls = sorted(gdf['Name'].unique().tolist())
 
 # Editable map title (sidebar)
