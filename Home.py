@@ -9,18 +9,21 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- Custom CSS (HIGHLY AGGRESSIVE FIX for hiding top-right controls) ---
+# --- Custom CSS (The definitive fix for hiding all Streamlit chrome) ---
 st.markdown("""
 <style>
-/* 1. HIDE ALL TOP-RIGHT STREAMLIT CONTROLS (Share, Settings, 3-dots/Manage App) 
-The use of multiple selectors ensures coverage across different Streamlit versions.
-*/
+/* 1. HIDE ALL TOP STREAMLIT CONTROLS (Header, Share, Settings, 3-dots/Manage App) */
+
+/* The main header bar (contains the icons) */
 header, 
 div[data-testid="stDecoration"],
-div[data-testid="stAppViewContainer"] > header, /* Targets the specific header container */
 div[data-testid="stToolbar"], 
 div[data-testid="stAppViewerControlPanel"], 
-button[data-testid="stActionButton"] { /* Targets the 3-dot button directly */
+button[data-testid="stActionButton"],
+/* Highly specific class for the floating menu container */
+.st-emotion-cache-12fmufv,
+/* Targets the entire app header that wraps the controls */
+div[data-testid="stAppViewContainer"] > header { 
     display: none !important;
     visibility: hidden !important;
     height: 0 !important; 
@@ -28,22 +31,32 @@ button[data-testid="stActionButton"] { /* Targets the 3-dot button directly */
     padding: 0 !important;
     margin: 0 !important;
     opacity: 0 !important;
-    pointer-events: none !important; /* Prevents interaction */
+    pointer-events: none !important; /* Prevents accidental clicks */
 }
 
-/* Hide bottom-right status widget */
-[data-testid="stStatusWidget"] {
+/* 2. HIDE BOTTOM "MANAGE APP" BAR */
+
+/* Targets the bottom-right status widget */
+[data-testid="stStatusWidget"],
+/* Targets the persistent footer bar that holds the "Manage App" link */
+div[data-testid="stBottomBlock"],
+/* Targets the official Streamlit footer if it is rendered */
+footer {
     display: none !important;
     visibility: hidden !important;
+    height: 0 !important; 
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
-/* Hide footer and main menu */
-footer, #MainMenu {display: none !important;}
+/* Hide old/other Streamlit default elements */
+#MainMenu {display: none !important;}
 
-/* 2. HIDE SIDEBAR AND ITS TOGGLE 
-This hides the default Streamlit "Home" navigation link and toggle button. 
-If you want the default navigation back, remove this section.
-*/
+/* 3. HIDE SIDEBAR AND ITS TOGGLE */
+/* This is why you cannot see the default "Home" button */
 section[data-testid="stSidebar"],
 button[title="Toggle sidebar"],
 button[title="Open sidebar"],
@@ -51,7 +64,7 @@ button[title="Hide sidebar"] {
     display: none !important;
 }
 
-/* --- Page Styling --- */
+/* --- Page Styling (Kept untouched) --- */
 body {
     background-color: #f8f9fa;
 }
