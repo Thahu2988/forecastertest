@@ -9,13 +9,19 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- Custom CSS ---
+# --- Custom CSS (FIXED for hiding top-right controls) ---
 st.markdown("""
 <style>
-/* Hide the "Manage app" tab (top-right black tab) */
-div[data-testid="stAppViewerControlPanel"] {
+/* Hide the top Streamlit header (contains the three-dot menu, "Manage app", and "Share") */
+/* We target multiple elements to ensure thorough hiding across different Streamlit versions */
+header, 
+div[data-testid="stDecoration"],
+div[data-testid="stAppViewerControlPanel"],
+div[data-testid="stToolbar"] {
     display: none !important;
     visibility: hidden !important;
+    height: 0 !important; /* Ensures no empty space is left behind */
+    padding: 0 !important;
 }
 
 /* Hide bottom-right status widget */
@@ -27,13 +33,7 @@ div[data-testid="stAppViewerControlPanel"] {
 /* Hide footer and main menu */
 footer, #MainMenu {display: none !important;}
 
-/* Hide Streamlit toolbar (Share, etc.) */
-[data-testid="stToolbar"] {
-    display: none !important;
-    visibility: hidden !important;
-}
-
-/* Hide sidebar and its toggle */
+/* Hide sidebar and its toggle (This is what hides the default "Home" navigation) */
 section[data-testid="stSidebar"],
 button[title="Toggle sidebar"],
 button[title="Open sidebar"],
@@ -98,11 +98,17 @@ st.title("🛠️ Maldives Meteorological Service Tools")
 
 # --- Two Buttons Close Together Below Title ---
 st.markdown('<div class="button-row">', unsafe_allow_html=True)
-col1, col2 = st.columns([0.5, 0.5])
+
+# Using columns for the buttons
+# Note: st.columns(2) is simpler than st.columns([0.5, 0.5])
+# The inner use_container_width=True ensures the buttons fill the space of their respective columns.
+col1, col2 = st.columns(2) 
 with col1:
+    # This button switches to the Rainfall Outlook page
     if st.button("🌧️ Rainfall Outlook", key="rain", use_container_width=True):
         st.switch_page("pages/Rainfall_Outlook.py")
 with col2:
+    # This button switches to the Temperature Outlook page
     if st.button("🌡️ Temperature Outlook", key="temp", use_container_width=True):
         st.switch_page("pages/Temperature_Outlook.py")
 st.markdown('</div>', unsafe_allow_html=True)
