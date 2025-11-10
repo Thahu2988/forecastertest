@@ -37,8 +37,10 @@ div[data-testid="stAppViewContainer"] > header { /* Targets the app header wrapp
 }
 
 /* 2. HIDE BOTTOM "MANAGE APP" BAR AND FOOTER */
+/* Added the stStatusWidgetContainer for complete removal */
 [data-testid="stStatusWidget"], /* Bottom-right status widget */
 div[data-testid="stBottomBlock"], /* Targets the persistent footer bar container */
+[data-testid="stStatusWidgetContainer"], /* New selector for the bar itself */
 footer {
     display: none !important;
     visibility: hidden !important;
@@ -53,13 +55,9 @@ footer {
 /* Hide old/other Streamlit default elements */
 #MainMenu {display: none !important;}
 
-/* 3. HIDE SIDEBAR AND ITS TOGGLE */
-section[data-testid="stSidebar"],
-button[title="Toggle sidebar"],
-button[title="Open sidebar"],
-button[title="Hide sidebar"] {
-    display: none !important;
-}
+/* 3. SIDEBAR CONTROLS: REMOVED the CSS that hides the sidebar and its toggle.
+   This ensures your editing tools on the left are visible again.
+*/
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
