@@ -18,65 +18,21 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# ULTRA-AGGRESSIVE CSS PATCH TO HIDE "MANAGE APP" + ALL UI
+# BASIC CSS CLEANUP (no need to hide Manage App)
 # -------------------------------------------------------------
-hide_streamlit_ui = """
+st.markdown("""
 <style>
-/* --- 1. HIDE TOOLBAR, HEADER, FOOTER, STATUS, DECORATION --- */
-header, footer, [data-testid="stStatusWidget"], [data-testid="stDecoration"],
-[data-testid="stBottomBlock"], [data-testid="stSidebarFooter"],
-[data-testid="stStatusWidgetContainer"], [data-testid="stToolbar"],
-[data-testid="stAppViewerControlPanel"], [data-testid="stBottom"],
-#MainMenu, .st-emotion-cache-12fmufv, .st-emotion-cache-z5fcl4,
-.st-emotion-cache-n9h0v5, .st-emotion-cache-1j00l9g, .st-emotion-cache-1fv82ss {
+header, footer, #MainMenu, [data-testid="stToolbar"] {
     display: none !important;
     visibility: hidden !important;
-    height: 0 !important;
-    min-height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
 }
-
-/* --- 2. HIDE STREAMLIT CLOUD BADGE / "Manage App" CONTAINERS --- */
-.viewerBadge_container__r5tak,
-.viewerBadge_link__qRIco,
-.viewerBadge_slot__E3y6m,
-a[href*="streamlit.io"],
-div[class*="viewerBadge"],
-iframe[src*="streamlit"],
-div[title*="Manage app"],
-section[data-testid="stMain"] + div {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-}
-
-/* --- 3. TRANSPARENT OVERLAY (FALLBACK) --- */
-body::after {
-    content: "";
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 300px;
-    height: 120px;
-    background: white;
-    opacity: 1;
-    z-index: 9999;
-    pointer-events: none;
-}
-
-/* --- 4. EXPAND MAIN CONTENT --- */
 .main .block-container {
     padding: 1rem !important;
     max-width: 100% !important;
     width: 100% !important;
 }
 </style>
-"""
-st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # -------------------------------------------------------------
 # LOAD SHAPEFILE
@@ -85,20 +41,16 @@ shp = 'data/Atoll_boundary2016.shp'
 try:
     gdf = gpd.read_file(shp).to_crs(epsg=4326)
 except Exception as e:
-    st.error(f"Error loading shapefile: {e}. Please ensure 'data/Atoll_boundary2016.shp' exists.")
+    st.error(f"Error loading shapefile: {e}. Please ensure the file exists.")
     st.stop()
 
 bbox = box(71, -1, 75, 7.5)
 gdf = gdf[gdf.intersects(bbox)]
-
-# -------------------------------------------------------------
-# CLEANUP
-# -------------------------------------------------------------
 gdf['Name'] = gdf['Name'].fillna("Unknown")
 unique_atolls = sorted(gdf['Name'].unique().tolist())
 
 # -------------------------------------------------------------
-# SIDEBAR INPUTS
+# SIDEBAR
 # -------------------------------------------------------------
 st.sidebar.markdown('### Adjust Atoll Categories & Percentages')
 map_title = st.sidebar.text_input("Edit Map Title:", "Maximum Rainfall Outlook for OND 2025")
@@ -111,12 +63,12 @@ for i, atoll in enumerate(unique_atolls):
     with st.sidebar.container(border=True):
         st.write(f"**{atoll}**")
         selected = st.selectbox("Category", categories, index=1, key=f"{atoll}_cat_{i}", label_visibility="collapsed")
-        percent = st.slider("Probability (%)", min_value=0, max_value=100, value=60, step=5, key=f"{atoll}_perc_{i}")
+        percent = st.slider("Probability (%)", 0, 100, 60, 5, key=f"{atoll}_perc_{i}")
         selected_categories[atoll] = selected
         selected_percentages[atoll] = percent
 
 # -------------------------------------------------------------
-# COLOR MAPS
+# COLORS
 # -------------------------------------------------------------
 cmap_below = ListedColormap(['#ffffff', '#ffed5c', '#ffb833', '#ff8f00', '#f15c00', '#e20000'])
 cmap_normal = ListedColormap(['#ffffff', '#b2df8a', '#6dc068', '#2d933e', '#006a2e', '#014723'])
@@ -127,9 +79,6 @@ norm = BoundaryNorm(bins, ncolors=len(bins)-1, clip=True)
 tick_positions = [35, 45, 55, 65, 75]
 tick_labels = ['35', '45', '55', '65', '75']
 
-# -------------------------------------------------------------
-# APPLY SELECTIONS TO GDF
-# -------------------------------------------------------------
 gdf['category'] = gdf['Name'].map(selected_categories)
 gdf['prob'] = gdf['Name'].map(selected_percentages)
 
@@ -137,7 +86,6 @@ gdf['prob'] = gdf['Name'].map(selected_percentages)
 # PLOT MAP
 # -------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(12, 10))
-
 for cat, cmap in zip(['Below Normal', 'Normal', 'Above Normal'],
                      [cmap_below, cmap_normal, cmap_above]):
     subset = gdf[gdf['category'] == cat]
@@ -150,13 +98,8 @@ ax.set_ylim(-1, 7.5)
 ax.set_title(map_title, fontsize=18)
 ax.set_xlabel("Longitude (°E)", fontsize=14)
 ax.set_ylabel("Latitude (°N)", fontsize=14)
-ax.set_xticks([71, 72, 73, 74, 75])
-ax.set_xticklabels(['71', '72', '73', '74', '75'])
 ax.tick_params(labelsize=12)
 
-# -------------------------------------------------------------
-# COLORBARS
-# -------------------------------------------------------------
 width, height, start_x, start_y, spacing = "40%", "2.5%", 0.05, 0.1, 0.09
 
 def make_cb(ax, cmap, title, offset):
@@ -172,21 +115,11 @@ def make_cb(ax, cmap, title, offset):
 make_cb(ax, cmap_above, "Above Normal", 2 * spacing)
 make_cb(ax, cmap_normal, "Normal", spacing)
 make_cb(ax, cmap_below, "Below Normal", 0)
-
 plt.tight_layout()
 
-# -------------------------------------------------------------
-# DISPLAY AND DOWNLOAD
-# -------------------------------------------------------------
 buf = BytesIO()
 plt.savefig(buf, format='png', bbox_inches='tight')
 buf.seek(0)
 
 st.pyplot(fig)
-
-st.download_button(
-    label="Download Map as PNG",
-    data=buf,
-    file_name='rainfall_outlook_map.png',
-    mime='image/png'
-)
+st.download_button("Download Map as PNG", buf, "rainfall_outlook_map.png", "image/png")
