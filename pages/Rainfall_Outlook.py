@@ -15,31 +15,51 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- Custom CSS to Hide UI Elements (Top-Right and Bottom-Right) ---
+# --- Custom CSS (DEFINITIVE FIX for hiding all Streamlit chrome) ---
 hide_streamlit_ui = """
 <style>
-/* 1. Hide the top-right Streamlit toolbar (Share, Star, Edit, etc.) */
-#MainMenu {visibility: hidden;} /* Hides the three-dot menu */
-
-[data-testid="stToolbar"] {
+/* 1. HIDE ALL TOP STREAMLIT CONTROLS (Header, Share, Settings, 3-dots/Manage App) */
+header, 
+div[data-testid="stDecoration"], /* Main decoration bar */
+div[data-testid="stToolbar"], /* Toolbar container */
+div[data-testid="stAppViewerControlPanel"], /* Top-right control panel */
+button[data-testid="stActionButton"], /* Targets the 3-dot button directly */
+.st-emotion-cache-12fmufv, /* Highly specific class for the floating menu container */
+div[data-testid="stAppViewContainer"] > header { /* Targets the app header wrapper */
+    display: none !important;
     visibility: hidden !important;
-    height: 0px !important;
-    position: fixed !important;
+    height: 0 !important; 
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important; /* Prevents interaction */
 }
 
-/* 2. Hide the entire footer area, which contains the bottom-right elements */
+/* 2. HIDE BOTTOM "MANAGE APP" BAR AND FOOTER */
+[data-testid="stStatusWidget"], /* Bottom-right status widget */
+div[data-testid="stBottomBlock"], /* Targets the persistent footer bar container */
 footer {
+    display: none !important;
     visibility: hidden !important;
-    display: none !important; /* Use display: none for maximum hiding effect */
-    height: 0px !important;
+    height: 0 !important; 
+    min-height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
 }
 
-/* 3. Aggressively hide the specific container for 'Manage app' or similar bottom-right features */
-.st-emotion-cache-1j00l9g, .st-emotion-cache-1fv82ss { 
-    visibility: hidden !important; 
+/* Hide old/other Streamlit default elements */
+#MainMenu {display: none !important;}
+
+/* 3. HIDE SIDEBAR AND ITS TOGGLE */
+section[data-testid="stSidebar"],
+button[title="Toggle sidebar"],
+button[title="Open sidebar"],
+button[title="Hide sidebar"] {
     display: none !important;
 }
-
 </style>
 """
 st.markdown(hide_streamlit_ui, unsafe_allow_html=True)
@@ -63,26 +83,26 @@ gdf['Name'] = gdf['Name'].fillna("Unknown")
 unique_atolls = sorted(gdf['Name'].unique().tolist())
 
 # Editable map title (sidebar)
+st.sidebar.markdown('### Adjust Atoll Categories & Percentages')
 map_title = st.sidebar.text_input("Edit Map Title:", "Maximum Rainfall Outlook for OND 2025")
+
 
 # Categories for each atoll
 categories = ['Below Normal', 'Normal', 'Above Normal']
 
-# Sidebar instructions
-st.sidebar.write("### Adjust Atoll Categories & Percentages")
-st.sidebar.write("Select category and percentage for each atoll:")
-
-# Dictionaries to store selections
+# Sidebar inputs for each unique atoll
 selected_categories = {}
 selected_percentages = {}
 
-# Sidebar inputs for each unique atoll
 for i, atoll in enumerate(unique_atolls):
-    selected = st.sidebar.selectbox(f"{atoll} Category", categories, index=1, key=f"{atoll}_cat_{i}")
-    percent = st.sidebar.slider(f"{atoll} %", min_value=0, max_value=100, value=60, step=5, key=f"{atoll}_perc_{i}")
+    # Use st.container() to group inputs for a cleaner look
+    with st.sidebar.container(border=True):
+        st.write(f"**{atoll}**")
+        selected = st.selectbox(f"Category", categories, index=1, key=f"{atoll}_cat_{i}", label_visibility="collapsed")
+        percent = st.slider(f"Probability (%)", min_value=0, max_value=100, value=60, step=5, key=f"{atoll}_perc_{i}")
     
-    selected_categories[atoll] = selected
-    selected_percentages[atoll] = percent
+        selected_categories[atoll] = selected
+        selected_percentages[atoll] = percent
 
 # Map category colors
 cmap_below = ListedColormap([
