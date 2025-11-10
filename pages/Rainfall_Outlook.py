@@ -36,14 +36,16 @@ div[data-testid="stAppViewContainer"] > header {
     pointer-events: none !important;
 }
 
-/* 2. HIDE BOTTOM "MANAGE APP" BAR AND FOOTER */
+/* 2. HIDE BOTTOM-RIGHT "MANAGE APP" BAR AND FOOTER (Targeting the bottom-right black bar) */
 [data-testid="stStatusWidget"],
 div[data-testid="stBottomBlock"],
 [data-testid="stStatusWidgetContainer"],
-/* FINAL SELECTOR FOR THE BLACK FOOTER BAR */
 div[data-testid="stBottom"],
-/* MOST AGGRESSIVE SELECTOR FOR THE APP FOOTER: */
-.st-emotion-cache-n9h0v5 {
+/* This targets the actual floating black bar containing "Manage app" */
+.st-emotion-cache-n9h0v5,
+.st-emotion-cache-1j00l9g, 
+.st-emotion-cache-1fv82ss,
+footer {
     display: none !important;
     visibility: hidden !important;
     height: 0 !important; 
@@ -54,11 +56,16 @@ div[data-testid="stBottom"],
     pointer-events: none !important;
 }
 
-/* Hide old/other Streamlit default elements */
-#MainMenu, footer {display: none !important;}
+/* 3. HIDE BOTTOM-LEFT FILE/BRANCH STATUS BAR */
+div[data-testid="stSidebarFooter"] {
+    display: none !important;
+    visibility: hidden !important;
+}
 
-/* 3. WIDEN MAIN CONTENT (ADDRESSES THE 5-INCH RIGHT SPACE) */
-/* This targets the main content div and removes side padding/margins */
+/* Hide old/other Streamlit default elements */
+#MainMenu {display: none !important;}
+
+/* 4. WIDEN MAIN CONTENT (To address the empty right column) */
 .main .block-container {
     padding-left: 0rem !important;
     padding-right: 0rem !important;
