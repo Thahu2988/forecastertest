@@ -18,11 +18,11 @@ st.set_page_config(
 )
 
 # -------------------------------------------------------------
-# AGGRESSIVE CSS TO HIDE STREAMLIT UI + MANAGE APP BAR
+# ULTRA-AGGRESSIVE CSS PATCH TO HIDE "MANAGE APP" + ALL UI
 # -------------------------------------------------------------
 hide_streamlit_ui = """
 <style>
-/* --- GLOBAL HIDE FOR TOP TOOLBAR, FOOTER, AND "MANAGE APP" --- */
+/* --- 1. HIDE TOOLBAR, HEADER, FOOTER, STATUS, DECORATION --- */
 header, footer, [data-testid="stStatusWidget"], [data-testid="stDecoration"],
 [data-testid="stBottomBlock"], [data-testid="stSidebarFooter"],
 [data-testid="stStatusWidgetContainer"], [data-testid="stToolbar"],
@@ -39,12 +39,38 @@ header, footer, [data-testid="stStatusWidget"], [data-testid="stDecoration"],
     pointer-events: none !important;
 }
 
-/* --- EXPAND MAIN AREA TO FULL WIDTH --- */
+/* --- 2. HIDE STREAMLIT CLOUD BADGE / "Manage App" CONTAINERS --- */
+.viewerBadge_container__r5tak,
+.viewerBadge_link__qRIco,
+.viewerBadge_slot__E3y6m,
+a[href*="streamlit.io"],
+div[class*="viewerBadge"],
+iframe[src*="streamlit"],
+div[title*="Manage app"],
+section[data-testid="stMain"] + div {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* --- 3. TRANSPARENT OVERLAY (FALLBACK) --- */
+body::after {
+    content: "";
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 300px;
+    height: 120px;
+    background: white;
+    opacity: 1;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* --- 4. EXPAND MAIN CONTENT --- */
 .main .block-container {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-    padding-top: 1rem !important;
-    padding-bottom: 1rem !important;
+    padding: 1rem !important;
     max-width: 100% !important;
     width: 100% !important;
 }
