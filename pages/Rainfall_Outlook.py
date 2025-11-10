@@ -36,15 +36,17 @@ div[data-testid="stAppViewContainer"] > header {
     pointer-events: none !important;
 }
 
-/* 2. HIDE BOTTOM-RIGHT "MANAGE APP" BAR AND FOOTER (Targeting the bottom-right black bar) */
+/* 2. HIDE BOTTOM-RIGHT "MANAGE APP" BAR AND FOOTER (The definitive fix) */
 [data-testid="stStatusWidget"],
 div[data-testid="stBottomBlock"],
 [data-testid="stStatusWidgetContainer"],
 div[data-testid="stBottom"],
-/* Most persistent selectors for the floating black bar containing "Manage app" */
+/* The specific class for the floating black bar containing "Manage app" */
 .st-emotion-cache-n9h0v5,
 .st-emotion-cache-1j00l9g, 
 .st-emotion-cache-1fv82ss,
+/* THIS SELECTOR IS THE MOST RELIABLE ONE for the floating footer/status bar */
+.st-emotion-cache-z5fcl4,
 footer {
     display: none !important;
     visibility: hidden !important;
